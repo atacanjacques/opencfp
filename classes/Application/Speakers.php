@@ -19,7 +19,9 @@ use OpenCFP\Domain\Speaker\SpeakerProfile;
 
 class Speakers
 {
-    /** @var IdentityProvider */
+    /**
+     * @var IdentityProvider 
+     */
     private $identityProvider;
 
     public function __construct(IdentityProvider $identityProvider)

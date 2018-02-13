@@ -9,9 +9,10 @@ let PurgecssPlugin = require("purgecss-webpack-plugin");
  * https://github.com/FullHuman/purgecss-webpack-plugin
  */
 class TailwindExtractor {
-  static extract(content) {
-    return content.match(/[A-z0-9-:\/]+/g);
-  }
+    static extract(content) 
+    {
+        return content.match(/[A-z0-9-:\/]+/g);
+    }
 }
 
 /*
@@ -28,28 +29,36 @@ class TailwindExtractor {
 mix.disableNotifications()
    .sass('resources/assets/sass/app.scss', 'web/assets/css')
    .copy('node_modules/font-awesome/fonts', 'web/assets/fonts')
-   .options({
-     processCssUrls: false,
-     postCss: [
-       tailwindcss('./tailwind.js'),
-     ]
-   })
+.options(
+    {
+        processCssUrls: false,
+        postCss: [
+        tailwindcss('./tailwind.js'),
+        ]
+    }
+)
 
-mix.webpackConfig({
-  plugins: [
-    new PurgecssPlugin({
-      paths: glob.sync([
-        path.join(__dirname, "resources/views/**/*.twig")
-      ]),
-      extractors: [
-        {
-          extractor: TailwindExtractor,
-          extensions: ["twig"]
-        }
-      ]
-    })
-  ]
-});
+mix.webpackConfig(
+    {
+        plugins: [
+        new PurgecssPlugin(
+            {
+                paths: glob.sync(
+                    [
+                    path.join(__dirname, "resources/views/**/*.twig")
+                    ]
+                ),
+            extractors: [
+            {
+                extractor: TailwindExtractor,
+                extensions: ["twig"]
+                }
+                ]
+            }
+        )
+    ]
+    }
+);
 
 // Full API
 // mix.js(src, output);

@@ -20,44 +20,53 @@
             return {};
         }
 
-        return str.trim().split('&').reduce(function (ret, param) {
-            var parts = param.replace(/\+/g, ' ').split('=');
-            var key = parts[0];
-            var val = parts[1];
+        return str.trim().split('&').reduce(
+            function (ret, param) {
+                var parts = param.replace(/\+/g, ' ').split('=');
+                var key = parts[0];
+                var val = parts[1];
 
-            key = decodeURIComponent(key);
-            // missing `=` should be `null`:
-            // http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
-            val = val === undefined ? null : decodeURIComponent(val);
+                key = decodeURIComponent(key);
+                // missing `=` should be `null`:
+                // http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
+                val = val === undefined ? null : decodeURIComponent(val);
 
-            if (!ret.hasOwnProperty(key)) {
-                ret[key] = val;
-            } else if (Array.isArray(ret[key])) {
-                ret[key].push(val);
-            } else {
-                ret[key] = [ret[key], val];
-            }
+                if (!ret.hasOwnProperty(key)) {
+                    ret[key] = val;
+                } else if (Array.isArray(ret[key])) {
+                    ret[key].push(val);
+                } else {
+                    ret[key] = [ret[key], val];
+                }
 
-            return ret;
-        }, {});
+                return ret;
+            }, {}
+        );
     };
 
     queryString.stringify = function (obj) {
-        return obj ? Object.keys(obj).map(function (key) {
-            var val = obj[key];
+        return obj ? Object.keys(obj).map(
+            function (key) {
+                var val = obj[key];
 
-            if (Array.isArray(val)) {
-                return val.map(function (val2) {
-                    return encodeURIComponent(key) + '=' + encodeURIComponent(val2);
-                }).join('&');
+                if (Array.isArray(val)) {
+                    return val.map(
+                        function (val2) {
+                            return encodeURIComponent(key) + '=' + encodeURIComponent(val2);
+                        }
+                    ).join('&');
+                }
+
+                return encodeURIComponent(key) + '=' + encodeURIComponent(val);
             }
-
-            return encodeURIComponent(key) + '=' + encodeURIComponent(val);
-        }).join('&') : '';
+        ).join('&') : '';
     };
 
     if (typeof define === 'function' && define.amd) {
-        define(function() { return queryString; });
+        define(
+            function () {
+                return queryString; }
+        );
     } else if (typeof module !== 'undefined' && module.exports) {
         module.exports = queryString;
     } else {
@@ -67,30 +76,34 @@
 
 var queryParams = queryString.parse(location.search);
 
-$('.sort').on('click', function(e) {
-    var $cell = $(this);
-    var sort;
+$('.sort').on(
+    'click', function (e) {
+        var $cell = $(this);
+        var sort;
 
-    if (!queryParams.hasOwnProperty('sort')) {
-      sort = 'DESC';
+        if (!queryParams.hasOwnProperty('sort')) {
+            sort = 'DESC';
+        }
+
+        if (queryParams.sort == 'ASC') {
+            sort = 'DESC';
+        }
+
+        if (queryParams.sort == 'DESC') {
+            sort = 'ASC';
+        }
+
+        queryParams.sort = sort;
+        queryParams.order_by = $cell.data('field');
+
+        location.href = location.pathname + '?' + queryString.stringify(queryParams);
     }
+);
 
-    if (queryParams.sort == 'ASC') {
-      sort = 'DESC';
+$(
+    function () {
+        if (queryParams.hasOwnProperty('sort') && queryParams.hasOwnProperty('order_by')) {
+            $('.sort[data-field="' + queryParams.order_by + '"]').addClass('sort--' + queryParams.sort.toLowerCase());
+        }
     }
-
-    if (queryParams.sort == 'DESC') {
-      sort = 'ASC';
-    }
-
-    queryParams.sort = sort;
-    queryParams.order_by = $cell.data('field');
-
-    location.href = location.pathname + '?' + queryString.stringify(queryParams);
-});
-
-$(function() {
-  if (queryParams.hasOwnProperty('sort') && queryParams.hasOwnProperty('order_by')) {
-    $('.sort[data-field="' + queryParams.order_by + '"]').addClass('sort--' + queryParams.sort.toLowerCase());
-  }
-});
+);
